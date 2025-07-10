@@ -1,0 +1,9 @@
+[phases.setup]
+commands = [
+  "python3 -m venv /opt/venv",
+  ". /opt/venv/bin/activate",
+  "pip install -r requirements.txt"
+]
+
+[phases.start]
+command = "python bot.py"
