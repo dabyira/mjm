@@ -3,14 +3,7 @@ import re
 import asyncio
 import aiohttp
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.ext import (
-    ApplicationBuilder,
-    CommandHandler,
-    MessageHandler,
-    CallbackQueryHandler,
-    ContextTypes,
-    filters,
-)
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, CallbackQueryHandler, ContextTypes, filters
 from yt_dlp import YoutubeDL
 
 TOKEN = "8146393797:AAESmjq0ApK-4e_qv_YO7uNTutWEkgtYWjM"
@@ -26,7 +19,7 @@ user_search = {}
 WELCOME_MESSAGE = (
     "🎉 أهلاً بك في بوت التحميل المميز 🎶\n\n"
     "📌 للبحث في يوتيوب اكتب:\n"
-    "يوت متبوع بكلمة البحث (مثال: يوت ناصيف زيتون)\n\n"
+    "يوت متبوع بكلمة البحث (مثال: يوت Dante Lonely Lonely)\n\n"
     "📥 يدعم روابط يوتيوب وتيك توك مباشرة\n"
     "⚡️ بواسطة: @zuz_4p"
 )
@@ -37,6 +30,7 @@ def extract_url(text):
     return yt_match.group(0) if yt_match else tt_match.group(0) if tt_match else None
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # أرسل الرسالة بدون parse_mode لتجنب مشاكل الترميز
     await update.message.reply_text(WELCOME_MESSAGE)
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -189,18 +183,12 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except Exception as e:
             await context.bot.send_message(chat_id, f"❌ خطأ أثناء إرسال الصوت: {e}")
 
-if __name__ == "__main__":
+async def main():
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     app.add_handler(CallbackQueryHandler(button_handler))
+    await app.run_polling()
 
-    try:
-        asyncio.run(app.run_polling())
-    except RuntimeError as e:
-        if "already running" in str(e):
-            loop = asyncio.get_event_loop()
-            loop.create_task(app.run_polling())
-            loop.run_forever()
-        else:
-            raise
+if __name__ == '__main__':
+    asyncio.run(main())
